@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{base_url}}/enrollments/22000004/WEB-01"
+method: DELETE
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is correct\", function () {\r
+
+      \    pm.response.to.be.success; \r
+
+      });"
+    language: text/javascript
+order: 8000
