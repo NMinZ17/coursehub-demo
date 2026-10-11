@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{base_url}}/health"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code la 200\", () => {\r
+
+      pm.response.to.have.status(200);\r
+
+      });\r
+
+      pm.test(\"Response la JSON\", () => {\r
+
+      pm.response.to.be.json;\r
+
+      });"
+    language: text/javascript
+order: 1000

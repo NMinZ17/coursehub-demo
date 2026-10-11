@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{base_url}}/sections/WEB-01"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is correct\", function () {\r
+
+      \    pm.response.to.be.success; \r
+
+      });"
+    language: text/javascript
+order: 10000
