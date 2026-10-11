@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{base_url}}/courses?q=web"
+method: GET
+queryParams:
+  q: web
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is correct\", function () {\r
+
+      \    pm.response.to.be.success; \r
+
+      });"
+    language: text/javascript
+order: 3000
