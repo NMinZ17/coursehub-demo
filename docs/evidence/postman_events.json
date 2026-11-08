@@ -1,0 +1,4707 @@
+{
+  "collection": {
+    "item": [
+      {
+        "id": "b5b9d634-ee81-46d4-bca0-8d52a04fe2a0",
+        "name": "01 - Có dữ liệu, thứ tự ổn định",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a27562e3-6f5f-44d2-9f95-82aa4f3a0fdc",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "0f663492-7500-41e7-ad06-a7ee8e4b4470"
+            }
+          }
+        ]
+      },
+      {
+        "id": "09da3f86-8f47-4008-9713-3093cbe8fe01",
+        "name": "02 - Không có dữ liệu",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "99999999"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a36039f4-9308-452f-8188-d6a3862c5e6c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "a048bded-6257-4145-aeb8-302f3babd0f6"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b6571357-3298-492f-97f0-4e85b4b4fcf1",
+        "name": "03 - Lọc CREATED",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "event_type",
+                "value": "CREATED"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "f1a60365-2c1a-4796-b757-3c0b4346c7d7",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "003c19ac-0c1b-484b-afe1-8e8cbdd4a5fb"
+            }
+          }
+        ]
+      },
+      {
+        "id": "5aecd2ea-fe92-4f33-93d2-2beac4395c63",
+        "name": "04 - Phân trang giữa hai sự kiện cùng thời điểm",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "1"
+              },
+              {
+                "key": "limit",
+                "value": "1"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "75db851b-d440-4fa9-8eaf-bef7cf82d466",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "1f8262e1-856d-4fb0-923c-e6465d306d69"
+            }
+          }
+        ]
+      },
+      {
+        "id": "6ad81196-5177-42b1-8a73-16608d84704c",
+        "name": "05 - Limit nhỏ nhất 1",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "1"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e0480ab5-7ccb-4e05-b7a3-97bdf23cb4aa",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "e9a87b00-5818-477a-b91d-22cf7a87c1ac"
+            }
+          }
+        ]
+      },
+      {
+        "id": "17409a33-1510-48f8-b006-7b7eee35477d",
+        "name": "06 - Limit lớn nhất 100",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "100"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "fc37084b-c2c0-4a51-b1b8-be09dccdc216",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 200 và JSON\", function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.response.to.be.json;",
+                "});",
+                "const rows = pm.response.json();",
+                "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                "    pm.expect(rows).to.be.an(\"array\");",
+                "    pm.expect(rows).to.eql(expected);",
+                "});",
+                "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                "    for (let i = 1; i < rows.length; i++) {",
+                "        const previous = rows[i - 1];",
+                "        const current = rows[i];",
+                "        const previousTime = Date.parse(previous.occurred_at);",
+                "        const currentTime = Date.parse(current.occurred_at);",
+                "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                "        if (previousTime === currentTime) {",
+                "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                "        }",
+                "    }",
+                "});"
+              ],
+              "_lastExecutionId": "edbcbb47-d10e-4855-8201-7bce56a259de"
+            }
+          }
+        ]
+      },
+      {
+        "id": "0b02563b-1281-4407-a5aa-14dc1c31fcd7",
+        "name": "07 - Lỗi limit bằng 0",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "0"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4c1b14bb-a68a-49da-91d7-fe0650f2f3fc",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 422 và JSON\", function () {",
+                "    pm.response.to.have.status(422);",
+                "    pm.response.to.be.json;",
+                "});",
+                "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+                "});"
+              ],
+              "_lastExecutionId": "7def84e8-3133-423c-ab85-23495905b31c"
+            }
+          }
+        ]
+      },
+      {
+        "id": "8af3b953-3380-422f-b102-d6d32bca0bd4",
+        "name": "08 - Lỗi limit vượt 100",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "101"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "052e32bc-1312-4435-a106-a1792f3202ee",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 422 và JSON\", function () {",
+                "    pm.response.to.have.status(422);",
+                "    pm.response.to.be.json;",
+                "});",
+                "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+                "});"
+              ],
+              "_lastExecutionId": "c8e85343-083c-4a47-b35f-9c6b1d8f28dd"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ececb9bc-26d1-426e-94e1-7b98f6867bc3",
+        "name": "09 - Lỗi skip âm",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "-1"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "6534c198-375e-4fd3-ac47-6a7daf82abce",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 422 và JSON\", function () {",
+                "    pm.response.to.have.status(422);",
+                "    pm.response.to.be.json;",
+                "});",
+                "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"skip\"]))).to.eql(true);",
+                "});"
+              ],
+              "_lastExecutionId": "86bf9298-bfc8-4b10-8b93-17bf0eb935a5"
+            }
+          }
+        ]
+      },
+      {
+        "id": "37069382-0147-4c9c-aebf-f8d8181b7b8e",
+        "name": "10 - Lỗi event_type không hợp lệ",
+        "request": {
+          "url": {
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "{{base_url}}"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "event_type",
+                "value": "INVALID"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "358cb192-2510-419c-b6a9-feacd72601c7",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"HTTP 422 và JSON\", function () {",
+                "    pm.response.to.have.status(422);",
+                "    pm.response.to.be.json;",
+                "});",
+                "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"event_type\"]))).to.eql(true);",
+                "});"
+              ],
+              "_lastExecutionId": "2b7148e4-6942-4fdc-8548-3451b467ace6"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "string",
+        "value": "http://127.0.0.1:8011",
+        "key": "base_url"
+      }
+    ],
+    "info": {
+      "_postman_id": "21bfefb5-d56c-40ec-bc33-e8f4de406126",
+      "name": "CourseHub - Enrollment events - Bài 1",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "10 request có/không dữ liệu, lọc, phân trang ổn định và validation. Chạy cùng python -m backend.tests.postman_demo --port 8011 để có fixture xác định, CSDL gốc không bị thay đổi. Dừng server bằng Ctrl+C để dọn schema thử.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "id": "5eaae5e4-4f47-4deb-bb19-cf19b2e742bf",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://127.0.0.1:8011",
+        "key": "base_url"
+      }
+    ]
+  },
+  "globals": {
+    "id": "0d7f9e1f-cbd9-498b-b20e-b5fa84ccdcf7",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 26,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 9.5,
+      "responseMin": 1,
+      "responseMax": 61,
+      "responseSd": 17.23513852569802,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1794111477848,
+      "completed": 1794111478776
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 10,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4a1b84b3-4907-4789-b239-3333f483c923",
+          "httpRequestId": "83e970f2-f923-444c-8f63-ad85257ce64e"
+        },
+        "item": {
+          "id": "b5b9d634-ee81-46d4-bca0-8d52a04fe2a0",
+          "name": "01 - Có dữ liệu, thứ tự ổn định",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a27562e3-6f5f-44d2-9f95-82aa4f3a0fdc",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "0f663492-7500-41e7-ad06-a7ee8e4b4470"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "9baaabe4-0b57-406b-9834-9fa0a2de5d0b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "e25aa236-8500-4032-b459-9b0965f6ddad",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:57 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "486"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              65,
+              78,
+              67,
+              69,
+              76,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              49,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 61,
+          "responseSize": 486
+        },
+        "id": "b5b9d634-ee81-46d4-bca0-8d52a04fe2a0",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "dca6d2c6-54fd-401c-b0bc-fc84c4ee4266",
+          "length": 10,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "6eb5bcb1-93ca-4cb2-a675-559e506858c8"
+        },
+        "item": {
+          "id": "09da3f86-8f47-4008-9713-3093cbe8fe01",
+          "name": "02 - Không có dữ liệu",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "99999999"
+                },
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a36039f4-9308-452f-8188-d6a3862c5e6c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "a048bded-6257-4145-aeb8-302f3babd0f6"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "99999999"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e3acd956-f3df-481d-8e5a-801e204db042",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "97393ad9-2137-4db6-bada-81062918d457",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:57 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "2"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 2
+        },
+        "id": "09da3f86-8f47-4008-9713-3093cbe8fe01",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "0266bda3-07ca-434e-bfc8-dec1c97bf56c",
+          "length": 10,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "83c6ef3f-cbde-4ebe-9741-96dee5b6c76b"
+        },
+        "item": {
+          "id": "b6571357-3298-492f-97f0-4e85b4b4fcf1",
+          "name": "03 - Lọc CREATED",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "event_type",
+                  "value": "CREATED"
+                },
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f1a60365-2c1a-4796-b757-3c0b4346c7d7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "003c19ac-0c1b-484b-afe1-8e8cbdd4a5fb"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "event_type",
+                "value": "CREATED"
+              },
+              {
+                "key": "skip",
+                "value": "0"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "a7898e78-7d0d-4acf-b34b-108e90da958d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "c315b7f6-b084-4c15-848e-ac4df3f21eb4",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:57 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "323"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              49,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 323
+        },
+        "id": "b6571357-3298-492f-97f0-4e85b4b4fcf1",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "a7a6d426-bb62-4ade-8db7-0fc2dbe7fc34",
+          "length": 10,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "38d05fe7-6b32-4a06-ab41-9c6728a179db"
+        },
+        "item": {
+          "id": "5aecd2ea-fe92-4f33-93d2-2beac4395c63",
+          "name": "04 - Phân trang giữa hai sự kiện cùng thời điểm",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "skip",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "75db851b-d440-4fa9-8eaf-bef7cf82d466",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "1f8262e1-856d-4fb0-923c-e6465d306d69"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "1"
+              },
+              {
+                "key": "limit",
+                "value": "1"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e3e9796c-577c-4346-8434-b437467c313b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "e8aff2af-9e9a-4977-8be9-3931c277a9b1",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:57 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "164"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              65,
+              78,
+              67,
+              69,
+              76,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 164
+        },
+        "id": "5aecd2ea-fe92-4f33-93d2-2beac4395c63",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "f7ab0978-7e84-40fd-a59a-167dce34d3a6",
+          "length": 10,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "7e0b7f4b-da65-439d-8270-00bcfc7f3252"
+        },
+        "item": {
+          "id": "6ad81196-5177-42b1-8a73-16608d84704c",
+          "name": "05 - Limit nhỏ nhất 1",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e0480ab5-7ccb-4e05-b7a3-97bdf23cb4aa",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "e9a87b00-5818-477a-b91d-22cf7a87c1ac"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "1"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c826d811-9691-454e-8f97-d460b53069f3",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "fac136c7-0455-4c2c-8344-de46130dadeb",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:57 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "162"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 162
+        },
+        "id": "6ad81196-5177-42b1-8a73-16608d84704c",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "d269ad7c-a681-4edf-8f18-ea46c4308726",
+          "length": 10,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "bb9c91ff-63be-4103-8e6e-b1ef11f6d9b7"
+        },
+        "item": {
+          "id": "17409a33-1510-48f8-b006-7b7eee35477d",
+          "name": "06 - Limit lớn nhất 100",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "fc37084b-c2c0-4a51-b1b8-be09dccdc216",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200 và JSON\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "const rows = pm.response.json();",
+                  "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+                  "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+                  "    pm.expect(rows).to.be.an(\"array\");",
+                  "    pm.expect(rows).to.eql(expected);",
+                  "});",
+                  "pm.test(\"occurred_at DESC, id DESC\", function () {",
+                  "    for (let i = 1; i < rows.length; i++) {",
+                  "        const previous = rows[i - 1];",
+                  "        const current = rows[i];",
+                  "        const previousTime = Date.parse(previous.occurred_at);",
+                  "        const currentTime = Date.parse(current.occurred_at);",
+                  "        pm.expect(previousTime).to.be.at.least(currentTime);",
+                  "        if (previousTime === currentTime) {",
+                  "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "_lastExecutionId": "edbcbb47-d10e-4855-8201-7bce56a259de"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "100"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "458da911-adc4-4265-94ea-8bc44d6db2d9",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "fb6de5b0-bea1-440e-83b1-ec8d3cd67984",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:58 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "486"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              65,
+              78,
+              67,
+              69,
+              76,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              50,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              115,
+              116,
+              117,
+              100,
+              101,
+              110,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              50,
+              50,
+              48,
+              48,
+              48,
+              48,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              108,
+              97,
+              115,
+              115,
+              95,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              87,
+              69,
+              66,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              34,
+              44,
+              34,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              34,
+              58,
+              34,
+              112,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              45,
+              98,
+              97,
+              105,
+              49,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              115,
+              101,
+              116,
+              34,
+              58,
+              34,
+              100,
+              101,
+              109,
+              111,
+              34,
+              44,
+              34,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              48,
+              49,
+              84,
+              48,
+              48,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 486
+        },
+        "id": "17409a33-1510-48f8-b006-7b7eee35477d",
+        "assertions": [
+          {
+            "assertion": "HTTP 200 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Đúng toàn bộ fixture được mong đợi",
+            "skipped": false
+          },
+          {
+            "assertion": "occurred_at DESC, id DESC",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "1354d497-daa5-47c5-838c-6ef8de75b9af",
+          "length": 10,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "08bb7257-0529-4b43-a7be-1ed12ea405f2"
+        },
+        "item": {
+          "id": "0b02563b-1281-4407-a5aa-14dc1c31fcd7",
+          "name": "07 - Lỗi limit bằng 0",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "0"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4c1b14bb-a68a-49da-91d7-fe0650f2f3fc",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 422 và JSON\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+                  "});"
+                ],
+                "_lastExecutionId": "7def84e8-3133-423c-ab85-23495905b31c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "0"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "7b827b55-b711-47eb-bd31-394973772ba4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "8103117e-6259-4d73-88f5-00a527e2cc8a",
+          "status": "Unprocessable Content",
+          "code": 422,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:58 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "144"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              91,
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              103,
+              114,
+              101,
+              97,
+              116,
+              101,
+              114,
+              95,
+              116,
+              104,
+              97,
+              110,
+              95,
+              101,
+              113,
+              117,
+              97,
+              108,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              34,
+              58,
+              91,
+              34,
+              113,
+              117,
+              101,
+              114,
+              121,
+              34,
+              44,
+              34,
+              108,
+              105,
+              109,
+              105,
+              116,
+              34,
+              93,
+              44,
+              34,
+              109,
+              115,
+              103,
+              34,
+              58,
+              34,
+              73,
+              110,
+              112,
+              117,
+              116,
+              32,
+              115,
+              104,
+              111,
+              117,
+              108,
+              100,
+              32,
+              98,
+              101,
+              32,
+              103,
+              114,
+              101,
+              97,
+              116,
+              101,
+              114,
+              32,
+              116,
+              104,
+              97,
+              110,
+              32,
+              111,
+              114,
+              32,
+              101,
+              113,
+              117,
+              97,
+              108,
+              32,
+              116,
+              111,
+              32,
+              49,
+              34,
+              44,
+              34,
+              105,
+              110,
+              112,
+              117,
+              116,
+              34,
+              58,
+              34,
+              48,
+              34,
+              44,
+              34,
+              99,
+              116,
+              120,
+              34,
+              58,
+              123,
+              34,
+              103,
+              101,
+              34,
+              58,
+              49,
+              125,
+              125,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 144
+        },
+        "id": "0b02563b-1281-4407-a5aa-14dc1c31fcd7",
+        "assertions": [
+          {
+            "assertion": "HTTP 422 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Chỉ rõ query parameter không hợp lệ",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "1c15ac80-a516-4e52-9107-fcc3052b967b",
+          "length": 10,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "c3fe38cc-390b-4070-99ef-d38f69ef0026"
+        },
+        "item": {
+          "id": "8af3b953-3380-422f-b102-d6d32bca0bd4",
+          "name": "08 - Lỗi limit vượt 100",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "101"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "052e32bc-1312-4435-a106-a1792f3202ee",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 422 và JSON\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+                  "});"
+                ],
+                "_lastExecutionId": "c8e85343-083c-4a47-b35f-9c6b1d8f28dd"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "limit",
+                "value": "101"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b8d1aa83-deb0-40fd-85a9-d87ee3bd52fa",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "61cba4f7-f180-4663-a7fb-0dc136908e21",
+          "status": "Unprocessable Content",
+          "code": 422,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:58 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "144"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              91,
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              108,
+              101,
+              115,
+              115,
+              95,
+              116,
+              104,
+              97,
+              110,
+              95,
+              101,
+              113,
+              117,
+              97,
+              108,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              34,
+              58,
+              91,
+              34,
+              113,
+              117,
+              101,
+              114,
+              121,
+              34,
+              44,
+              34,
+              108,
+              105,
+              109,
+              105,
+              116,
+              34,
+              93,
+              44,
+              34,
+              109,
+              115,
+              103,
+              34,
+              58,
+              34,
+              73,
+              110,
+              112,
+              117,
+              116,
+              32,
+              115,
+              104,
+              111,
+              117,
+              108,
+              100,
+              32,
+              98,
+              101,
+              32,
+              108,
+              101,
+              115,
+              115,
+              32,
+              116,
+              104,
+              97,
+              110,
+              32,
+              111,
+              114,
+              32,
+              101,
+              113,
+              117,
+              97,
+              108,
+              32,
+              116,
+              111,
+              32,
+              49,
+              48,
+              48,
+              34,
+              44,
+              34,
+              105,
+              110,
+              112,
+              117,
+              116,
+              34,
+              58,
+              34,
+              49,
+              48,
+              49,
+              34,
+              44,
+              34,
+              99,
+              116,
+              120,
+              34,
+              58,
+              123,
+              34,
+              108,
+              101,
+              34,
+              58,
+              49,
+              48,
+              48,
+              125,
+              125,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 144
+        },
+        "id": "8af3b953-3380-422f-b102-d6d32bca0bd4",
+        "assertions": [
+          {
+            "assertion": "HTTP 422 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Chỉ rõ query parameter không hợp lệ",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "b537e841-f730-46ea-a82d-33d1cbfb6c2c",
+          "length": 10,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "d6d8a280-9ab9-488c-ab6d-70f24e00514d"
+        },
+        "item": {
+          "id": "ececb9bc-26d1-426e-94e1-7b98f6867bc3",
+          "name": "09 - Lỗi skip âm",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "skip",
+                  "value": "-1"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "6534c198-375e-4fd3-ac47-6a7daf82abce",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 422 và JSON\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"skip\"]))).to.eql(true);",
+                  "});"
+                ],
+                "_lastExecutionId": "86bf9298-bfc8-4b10-8b93-17bf0eb935a5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "skip",
+                "value": "-1"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "deb84c01-f320-474c-94a1-0da5eb068148",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "312a5327-7498-446b-8ef7-44ddd1352fae",
+          "status": "Unprocessable Content",
+          "code": 422,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:58 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "144"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              91,
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              103,
+              114,
+              101,
+              97,
+              116,
+              101,
+              114,
+              95,
+              116,
+              104,
+              97,
+              110,
+              95,
+              101,
+              113,
+              117,
+              97,
+              108,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              34,
+              58,
+              91,
+              34,
+              113,
+              117,
+              101,
+              114,
+              121,
+              34,
+              44,
+              34,
+              115,
+              107,
+              105,
+              112,
+              34,
+              93,
+              44,
+              34,
+              109,
+              115,
+              103,
+              34,
+              58,
+              34,
+              73,
+              110,
+              112,
+              117,
+              116,
+              32,
+              115,
+              104,
+              111,
+              117,
+              108,
+              100,
+              32,
+              98,
+              101,
+              32,
+              103,
+              114,
+              101,
+              97,
+              116,
+              101,
+              114,
+              32,
+              116,
+              104,
+              97,
+              110,
+              32,
+              111,
+              114,
+              32,
+              101,
+              113,
+              117,
+              97,
+              108,
+              32,
+              116,
+              111,
+              32,
+              48,
+              34,
+              44,
+              34,
+              105,
+              110,
+              112,
+              117,
+              116,
+              34,
+              58,
+              34,
+              45,
+              49,
+              34,
+              44,
+              34,
+              99,
+              116,
+              120,
+              34,
+              58,
+              123,
+              34,
+              103,
+              101,
+              34,
+              58,
+              48,
+              125,
+              125,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 144
+        },
+        "id": "ececb9bc-26d1-426e-94e1-7b98f6867bc3",
+        "assertions": [
+          {
+            "assertion": "HTTP 422 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Chỉ rõ query parameter không hợp lệ",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "11456ceb-e93d-44c1-bccc-6413d1c78560",
+          "length": 10,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "75998176-e88b-4cbd-98fe-2986daef3ce4"
+        },
+        "item": {
+          "id": "37069382-0147-4c9c-aebf-f8d8181b7b8e",
+          "name": "10 - Lỗi event_type không hợp lệ",
+          "request": {
+            "url": {
+              "path": [
+                "enrollment-events"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "22000001"
+                },
+                {
+                  "key": "event_type",
+                  "value": "INVALID"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "358cb192-2510-419c-b6a9-feacd72601c7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 422 và JSON\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+                  "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"event_type\"]))).to.eql(true);",
+                  "});"
+                ],
+                "_lastExecutionId": "2b7148e4-6942-4fdc-8548-3451b467ace6"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8011",
+            "path": [
+              "enrollment-events"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "student_id",
+                "value": "22000001"
+              },
+              {
+                "key": "event_type",
+                "value": "INVALID"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b2b6a7c2-c963-4030-a54d-7ecbba97a8a6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8011",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "b7ae130f-e3da-4db6-a8d5-963ceb4af418",
+          "status": "Unprocessable Content",
+          "code": 422,
+          "header": [
+            {
+              "key": "date",
+              "value": "Sun, 08 Nov 2026 04:17:58 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "179"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              91,
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              108,
+              105,
+              116,
+              101,
+              114,
+              97,
+              108,
+              95,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              44,
+              34,
+              108,
+              111,
+              99,
+              34,
+              58,
+              91,
+              34,
+              113,
+              117,
+              101,
+              114,
+              121,
+              34,
+              44,
+              34,
+              101,
+              118,
+              101,
+              110,
+              116,
+              95,
+              116,
+              121,
+              112,
+              101,
+              34,
+              93,
+              44,
+              34,
+              109,
+              115,
+              103,
+              34,
+              58,
+              34,
+              73,
+              110,
+              112,
+              117,
+              116,
+              32,
+              115,
+              104,
+              111,
+              117,
+              108,
+              100,
+              32,
+              98,
+              101,
+              32,
+              39,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              39,
+              32,
+              111,
+              114,
+              32,
+              39,
+              67,
+              65,
+              78,
+              67,
+              69,
+              76,
+              76,
+              69,
+              68,
+              39,
+              34,
+              44,
+              34,
+              105,
+              110,
+              112,
+              117,
+              116,
+              34,
+              58,
+              34,
+              73,
+              78,
+              86,
+              65,
+              76,
+              73,
+              68,
+              34,
+              44,
+              34,
+              99,
+              116,
+              120,
+              34,
+              58,
+              123,
+              34,
+              101,
+              120,
+              112,
+              101,
+              99,
+              116,
+              101,
+              100,
+              34,
+              58,
+              34,
+              39,
+              67,
+              82,
+              69,
+              65,
+              84,
+              69,
+              68,
+              39,
+              32,
+              111,
+              114,
+              32,
+              39,
+              67,
+              65,
+              78,
+              67,
+              69,
+              76,
+              76,
+              69,
+              68,
+              39,
+              34,
+              125,
+              125,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 1,
+          "responseSize": 179
+        },
+        "id": "37069382-0147-4c9c-aebf-f8d8181b7b8e",
+        "assertions": [
+          {
+            "assertion": "HTTP 422 và JSON",
+            "skipped": false
+          },
+          {
+            "assertion": "Chỉ rõ query parameter không hợp lệ",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 2234
+    },
+    "failures": [],
+    "error": null
+  }
+}

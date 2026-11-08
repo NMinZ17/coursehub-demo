@@ -1,0 +1,60 @@
+name: CourseHub enrollment exercises
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: coursehub_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: coursehub_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d coursehub_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_NAME: coursehub_ci
+      DB_USER: postgres
+      DB_PASSWORD: coursehub_ci_password
+      PYTHONDONTWRITEBYTECODE: '1'
+      COURSEHUB_TEST_REPORT: ${{ runner.temp }}/coursehub-evidence/database_preservation.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Python dependencies
+        run: python -m pip install -r backend/requirements-dev.txt
+      - name: PostgreSQL integration tests and preservation report
+        run: python -m pytest -q --junitxml="${{ runner.temp }}/coursehub-evidence/pytest.xml"
+      - name: Measure second index
+        if: ${{ hashFiles('backend/tests/benchmark_index.py') != '' }}
+        run: python -m backend.tests.benchmark_index --output "${{ runner.temp }}/coursehub-evidence/index_benchmark.json"
+      - name: Run Postman collection against disposable schema
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/coursehub-newman" --no-audit --no-fund newman@6
+          python -m backend.tests.run_postman --newman-cli "$RUNNER_TEMP/coursehub-newman/node_modules/newman/bin/newman.js" --output "$RUNNER_TEMP/coursehub-evidence/postman.json"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coursehub-enrollment-evidence
+          path: ${{ runner.temp }}/coursehub-evidence

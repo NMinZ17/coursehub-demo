@@ -1,0 +1,564 @@
+{
+  "info": {
+    "name": "CourseHub - Enrollment events - Bài 1",
+    "description": "10 request có/không dữ liệu, lọc, phân trang ổn định và validation. Chạy cùng python -m backend.tests.postman_demo --port 8011 để có fixture xác định, CSDL gốc không bị thay đổi. Dừng server bằng Ctrl+C để dọn schema thử.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8011",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Có dữ liệu, thứ tự ổn định",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&skip=0&limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "skip",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Không có dữ liệu",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=99999999&skip=0&limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "99999999"
+            },
+            {
+              "key": "skip",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Lọc CREATED",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&event_type=CREATED&skip=0&limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "event_type",
+              "value": "CREATED"
+            },
+            {
+              "key": "skip",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Phân trang giữa hai sự kiện cùng thời điểm",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&skip=1&limit=1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "skip",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Limit nhỏ nhất 1",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&limit=1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "limit",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"}];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Limit lớn nhất 100",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&limit=100",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "limit",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200 và JSON\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.response.to.be.json;",
+              "});",
+              "const rows = pm.response.json();",
+              "pm.test(\"Đúng toàn bộ fixture được mong đợi\", function () {",
+              "    const expected = [{\"id\":3,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":2,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CANCELLED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-02T00:00:00\"},{\"id\":1,\"student_id\":\"22000001\",\"class_section_id\":\"WEB-01\",\"event_type\":\"CREATED\",\"source\":\"postman-bai1\",\"dataset\":\"demo\",\"occurred_at\":\"2026-11-01T00:00:00\"}];",
+              "    pm.expect(rows).to.be.an(\"array\");",
+              "    pm.expect(rows).to.eql(expected);",
+              "});",
+              "pm.test(\"occurred_at DESC, id DESC\", function () {",
+              "    for (let i = 1; i < rows.length; i++) {",
+              "        const previous = rows[i - 1];",
+              "        const current = rows[i];",
+              "        const previousTime = Date.parse(previous.occurred_at);",
+              "        const currentTime = Date.parse(current.occurred_at);",
+              "        pm.expect(previousTime).to.be.at.least(currentTime);",
+              "        if (previousTime === currentTime) {",
+              "            pm.expect(previous.id).to.be.greaterThan(current.id);",
+              "        }",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Lỗi limit bằng 0",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&limit=0",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "limit",
+              "value": "0"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 422 và JSON\", function () {",
+              "    pm.response.to.have.status(422);",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+              "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Lỗi limit vượt 100",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&limit=101",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "limit",
+              "value": "101"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 422 và JSON\", function () {",
+              "    pm.response.to.have.status(422);",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+              "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"limit\"]))).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Lỗi skip âm",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&skip=-1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "skip",
+              "value": "-1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 422 và JSON\", function () {",
+              "    pm.response.to.have.status(422);",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+              "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"skip\"]))).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Lỗi event_type không hợp lệ",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollment-events?student_id=22000001&event_type=INVALID",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollment-events"
+          ],
+          "query": [
+            {
+              "key": "student_id",
+              "value": "22000001"
+            },
+            {
+              "key": "event_type",
+              "value": "INVALID"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 422 và JSON\", function () {",
+              "    pm.response.to.have.status(422);",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Chỉ rõ query parameter không hợp lệ\", function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.detail).to.be.an(\"array\").that.is.not.empty;",
+              "    pm.expect(body.detail.some(error => JSON.stringify(error.loc) === JSON.stringify([\"query\", \"event_type\"]))).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
